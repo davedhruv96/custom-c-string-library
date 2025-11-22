@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "mystring.h"
 
-void main()
+int main()
 {
     int menu, stringSize, n;
     printf("Enter maximum characters for your strings: ");
@@ -106,4 +106,5 @@ void main()
             printf("Invalid option!\n");
         }
     }
+    return 0;
 }
