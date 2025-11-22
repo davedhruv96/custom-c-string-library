@@ -1,40 +1,43 @@
 # custom-c-string-library
-Manual implementation of &lt;string.h> functions with a focus on memory safety and buffer overflow protection.
-My Custom C String Library (Rebuilding <string.h>)
 
-This is my manual implementation of the standard C string library. I built this from scratch because I wanted to actually understand how C handles memory and strings under the hood, rather than just blindly using <string.h>.
+A chill, from-scratch remake of `<string.h>` — written while I was trying to actually understand pointers, string,  `malloc` and why C can be weirdly unforgiving.
 
-Why I Did This
+Think of this as a uni project meets tinkering session: I rebuilt a handful of classic C string functions with some simple safety-minded tweaks and lots of hand-written logic.
 
-Honestly, pointers and memory management in C were confusing me. I realized the best way to learn wasn't just reading about malloc and free, but actually building the tools that use them.
+Why I did this
+--------------
+I kept getting confused by pointers and buffer overflows in class, and reading slides wasn't cutting it. So I decided to:
+- actually write the functions people use every day (`strlen`, `strcpy`, `strcat`, etc.),
+- learn how dynamic allocation behaves in real code,
+- and see where the standard API can be “dangerous” if used carelessly.
 
-So, I decided to rebuild the standard library functions myself to figure out:
+What I learned (and what you can see in the code)
+-------------------------------------------------
+- How pointer arithmetic and passing arrays to functions really work.
+- Why functions like `gets()` are dangerous and how leftover newline characters can mess input.
+- How to allocate exactly what you need with `malloc` and manage the memory manually.
 
-How pointers actually work: Passing arrays, pointer arithmetic, and dereferencing.
+What’s in this repo
+-------------------
+- `mystring.c` / `mystring.h` — manual implementations of several `<string.h>` functions, plus some safer helpers.
+- `main.c` — simple interactive demo (asks for sizes, reads strings, shows function outputs).
+- A custom `getstring()` — a safer replacement for `gets()` that handles buffer length and leftover newlines.
+- Implemented functions: `strlength` (`strlen`), `strcopy` (`strcpy`), `strcats`/`strncats` (`strcat`/`strncat`), `strcompare` (`strcmp`), `strreverse`, `strlower`, `strupper`, and a couple of helpers.
 
-Why C is "unsafe": I learned the hard way why gets() is dangerous and how easy it is to accidentally overwrite memory.
+Features & design notes
+-----------------------
+- Dynamic memory: demo asks you for the size, then allocates exactly that much.
+- Input handling: `getstring()` tries to avoid common pitfalls with `scanf`/`gets` by cleaning the input buffer.
+- Educational: code is intentionally straightforward (no clever macros) so it’s easier to follow for learning.
 
-What's Inside
-
-It's not just a copy-paste of the standard library. I tried to make a few things safer where I could.
-
-Dynamic Memory: The program asks you for the string size and allocates exactly that much memory using malloc.
-
-getstring() (My gets replacement): I added my own input function because standard scanf and gets were giving me headaches with buffer overflows and leftover newline characters. Mine cleans the buffer automatically and prevents you from typing past the allocated size.
-
-The Classics: I manually wrote the logic for:
-
-strlength (strlen)
-
-strcopy, strcats, strncats (Copying/Concatenating)
-
-strcompare (Comparing)
-
-strreverse, strlower, strupper (Modifying)
-
-How to Run It
-
-If you want to test it out, you can compile the files together using gcc:
-
+How to compile & run
+--------------------
+Compile everything with GCC (same folder):
+```bash
 gcc main.c mystring.c -o my_string_lib
 ./my_string_lib
+```
+
+TL;DR (if you’re skimming)
+--------------------------
+I rewrote parts of the C string library to learn how it all works. It’s simple, verbose, and meant for learning — not production use. Play around, break it, then fix it again.
