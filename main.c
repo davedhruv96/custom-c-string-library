@@ -6,10 +6,11 @@ void main()
 {
     int menu, stringSize, n;
     printf("Enter maximum characters for your strings(including null character): ");
-    scanf("%d", &stringSize);
-    while(stringSize <= 1){
+    while (scanf("%d", &stringSize) != 1 || stringSize <= 1)
+    {
+        while (getchar() != '\n')
+            ;
         printf("Enter maximum character for the string, string size should be greater than 1: ");
-        scanf("%d",stringSize);
     }
     char *s1 = malloc(stringSize * sizeof(char));
     char *s2 = malloc(stringSize * sizeof(char));
@@ -23,6 +24,7 @@ void main()
     printf("\n--- Welcome to the Custom C String Library ---\n");
     printf("Please enter the first string to start: ");
     getstring(s1, stringSize);
+    // while (getchar() != '\n');
 
     while (1)
     {
@@ -41,8 +43,13 @@ void main()
         printf("0. Exit\n");
         printf("----------------------------------------\n");
         printf("Enter your choice: ");
-        scanf("%d", &menu);
-
+        int temp = scanf("%d", &menu);
+        while (temp != 1)
+        {
+            while (getchar() != '\n');
+            printf("Menu num is between 0 and 9, reEnter menu: ");
+            temp = scanf("%d", &menu);
+        }
         switch (menu)
         {
         case 0:
@@ -78,7 +85,11 @@ void main()
             getstring(s2, stringSize);
             if (strlength(s1) + strlength(s2) >= stringSize)
             {
-                if(!realloc(s1, strlength(s1) + strlength(s2) + 1)){
+                if (!realloc(s1, strlength(s1) + strlength(s2) + 1))
+                {
+                    free(s1);
+                    free(s2);
+                    printf("Memory allocation failed!");
                     return;
                 }
             }
@@ -91,8 +102,13 @@ void main()
             getstring(s2, stringSize);
             printf("How many characters? ");
             scanf("%d", &n);
-            if(strlength(s1) + n*sizeof(char) + 1 >= stringSize){
-                if(!realloc(s1, strlength(s1) + n*sizeof(char) + 1)){
+            if (strlength(s1) + n * sizeof(char) + 1 >= stringSize)
+            {
+                if (!realloc(s1, strlength(s1) + n * sizeof(char) + 1))
+                {
+                    free(s1);
+                    free(s2);
+                    printf("Memory allocation failed!");
                     return;
                 }
             }
@@ -117,8 +133,17 @@ void main()
 
         case 9:
             printf("Enter maximum characters for the new string: ");
-            scanf("%d",&stringSize);
-            if(!realloc(s1, stringSize*sizeof(char)) || !realloc(s2, stringSize*sizeof(char))){
+            while (scanf("%d", &stringSize) != 1 || stringSize <= 1)
+            {
+                while (getchar() != '\n');
+                printf("Enter maximum character for the string, string size should be greater than 1: ");
+            }
+
+            if (!realloc(s1, stringSize * sizeof(char)) || !realloc(s2, stringSize * sizeof(char)))
+            {
+                free(s1);
+                free(s2);
+                printf("Memory allocation failed!");
                 return;
             }
             printf("Enter new S1: ");
@@ -127,6 +152,7 @@ void main()
 
         default:
             printf("Invalid option!\n");
+            continue;
         }
     }
 }
