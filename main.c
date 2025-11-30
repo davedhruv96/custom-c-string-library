@@ -64,6 +64,13 @@ void main()
 
         case 2:
             strcopy(s1, s2);
+            if (!realloc(s2, stringSize*sizeof(char)))
+                {
+                    free(s1);
+                    free(s2);
+                    printf("Memory allocation failed!");
+                    return;
+                }
             printf("Copied! S2 is now: \"%s\"\n", s2);
             break;
 
@@ -85,7 +92,8 @@ void main()
             getstring(s2, stringSize);
             if (strlength(s1) + strlength(s2) >= stringSize)
             {
-                if (!realloc(s1, strlength(s1) + strlength(s2) + 1))
+                stringSize = strlength(s1) + strlength(s2) + 1;
+                if (!realloc(s1, stringSize*sizeof(char)))
                 {
                     free(s1);
                     free(s2);
@@ -104,7 +112,8 @@ void main()
             scanf("%d", &n);
             if (strlength(s1) + n * sizeof(char) + 1 >= stringSize)
             {
-                if (!realloc(s1, strlength(s1) + n * sizeof(char) + 1))
+                stringSize = strlength(s1) + n + 1;
+                if (!realloc(s1, stringSize*sizeof(char)))
                 {
                     free(s1);
                     free(s2);
