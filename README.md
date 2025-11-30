@@ -1,4 +1,4 @@
-My Custom C String Library
+My Custom C String Library (Rebuilding <string.h>)
 
 This is my manual implementation of the standard C string library. I built this from scratch because I wanted to actually understand how C handles memory and strings under the hood, rather than just blindly using <string.h>.
 
@@ -8,33 +8,43 @@ Honestly, pointers and memory management in C were confusing me. I realized the 
 
 So, I decided to rebuild the standard library functions myself to figure out:
 
-How pointers actually work: Passing arrays, pointer arithmetic, and dereferencing.
+Mastering Pointers: Figuring out exactly how arrays and pointers interact.
 
-Why C is "unsafe": I learned the hard way why gets() is dangerous and how easy it is to accidentally overwrite memory.
+Safety First: Implementing bounds checking manually because standard gets() is dangerous.
 
-Manual Memory Management: Allocating memory on the heap and remembering to free it.
+Memory Management: Getting comfortable with malloc and free for dynamic string sizes.
 
-What's Inside
+Features
 
-It's not just a copy-paste of the standard library. I tried to make a few things safer where I could.
+Dynamic Memory: Handles user-defined string sizes on the heap so you aren't stuck with fixed-size arrays.
 
-Dynamic Memory: The program asks you for the string size and allocates exactly that much memory using malloc.
+Safe Input: I added a custom getstring() function (my version of gets). It handles input buffering and prevents buffer overflow.
 
-getstring() (My gets replacement): I added my own input function because standard scanf and gets were giving me headaches with buffer overflows and leftover newline characters. Mine cleans the buffer automatically and prevents you from typing past the allocated size.
+Core Functions:
 
-The Classics: I manually wrote the logic for:
+strlength: Calculate length.
 
-strlength (Length)
+strcopy / strcats / strncats: Safe copying and concatenation.
 
-strcopy, strcats, strncats (Copying/Concatenating)
+strcompare: Manual character comparison.
 
-strcompare (Comparing)
-
-strreverse, strlower, strupper (Modifying)
+strreverse / strlower / strupper: In-place string manipulation.
 
 How to Run It
 
-If you want to test it out, you can compile the files together using gcc:
+If you want to test it out, you can compile the files together using gcc.
+
+Clone the repository:
+
+git clone [https://github.com/davedhruv96/custom-c-string-library.git](https://github.com/davedhruv96/custom-c-string-library.git)
+cd custom-c-string-library
+
+
+Compile the code:
 
 gcc main.c mystring.c -o my_string_lib
+
+
+Run the program:
+
 ./my_string_lib
