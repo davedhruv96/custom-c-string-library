@@ -1,40 +1,24 @@
-My Custom C String Library
+# My Custom C String Library
 
-This is my manual implementation of the standard C string library. I built this from scratch because I wanted to actually understand how C handles memory and strings under the hood, rather than just blindly using <string.h>.
+This is my manual implementation of the standard C string library. I built this from scratch because I wanted to actually understand how C handles memory and strings under the hood, rather than just blindly using `<string.h>`.
 
-Why I Did This
+## Why I Did This
 
-Honestly, pointers and memory management in C were confusing me. I realized the best way to learn wasn't just reading about malloc and free, but actually building the tools that use them.
+Honestly, pointers and memory management in C were confusing me. I realized the best way to learn wasn't just reading about `malloc` and `free`, but actually building the tools that use them.
 
 So, I decided to rebuild the standard library functions myself to figure out:
 
-How pointers actually work: Passing arrays, pointer arithmetic, and dereferencing.
+- **Mastering Pointers**: Figuring out exactly how arrays and pointers interact.
+- **Safety First**: Implementing bounds checking manually because standard `gets()` is dangerous.
+- **Memory Management**: Getting comfortable with `malloc` and `free` for dynamic string sizes.
 
-Why C is "unsafe": I learned the hard way why gets() is dangerous and how easy it is to accidentally overwrite memory.
+## Features
 
-Manual Memory Management: Allocating memory on the heap and remembering to free it.
+- **Dynamic Memory**: Handles user-defined string sizes on the heap so you aren't stuck with fixed-size arrays.
+- **Safe Input**: I added a custom `getstring()` function (my version of `gets`). It handles input buffering and prevents buffer overflow.
+- **Core Functions**:
+  - `strlength`: Calculate length.
+  - `strcopy` / `strcats` / `strncats`: Safe copying and concatenation.
+  - `strcompare`: Manual character comparison.
+  - `strreverse` / `strlower` / `strupper`: In-place string manipulation.
 
-What's Inside
-
-It's not just a copy-paste of the standard library. I tried to make a few things safer where I could.
-
-Dynamic Memory: The program asks you for the string size and allocates exactly that much memory using malloc.
-
-getstring() (My gets replacement): I added my own input function because standard scanf and gets were giving me headaches with buffer overflows and leftover newline characters. Mine cleans the buffer automatically and prevents you from typing past the allocated size.
-
-The Classics: I manually wrote the logic for:
-
-strlength (Length)
-
-strcopy, strcats, strncats (Copying/Concatenating)
-
-strcompare (Comparing)
-
-strreverse, strlower, strupper (Modifying)
-
-How to Run It
-
-If you want to test it out, you can compile the files together using gcc:
-
-gcc main.c mystring.c -o my_string_lib
-./my_string_lib
