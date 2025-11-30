@@ -63,7 +63,6 @@ void main()
             break;
 
         case 2:
-            strcopy(s1, s2);
             if (!realloc(s2, stringSize*sizeof(char)))
                 {
                     free(s1);
@@ -71,6 +70,7 @@ void main()
                     printf("Memory allocation failed!");
                     return;
                 }
+            strcopy(s1, s2);
             printf("Copied! S2 is now: \"%s\"\n", s2);
             break;
 
