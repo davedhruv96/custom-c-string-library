@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # My Custom C String Library
+=======
+My Custom C String Library (Rebuilding <string.h>)
+>>>>>>> eb008a7f33b8542a490fb44e24424b8b380597a1
 
 This is my manual implementation of the standard C string library. I built this from scratch because I wanted to actually understand how C handles memory and strings under the hood, rather than just blindly using `<string.h>`.
 
@@ -8,6 +12,7 @@ Honestly, pointers and memory management in C were confusing me. I realized the 
 
 So, I decided to rebuild the standard library functions myself to figure out:
 
+<<<<<<< HEAD
 - **Mastering Pointers**: Figuring out exactly how arrays and pointers interact.
 - **Safety First**: Implementing bounds checking manually because standard `gets()` is dangerous.
 - **Memory Management**: Getting comfortable with `malloc` and `free` for dynamic string sizes.
@@ -22,3 +27,45 @@ So, I decided to rebuild the standard library functions myself to figure out:
   - `strcompare`: Manual character comparison.
   - `strreverse` / `strlower` / `strupper`: In-place string manipulation.
 
+=======
+Mastering Pointers: Figuring out exactly how arrays and pointers interact.
+
+Safety First: Implementing bounds checking manually because standard gets() is dangerous.
+
+Memory Management: Getting comfortable with malloc and free for dynamic string sizes.
+
+Features
+
+Dynamic Memory: Handles user-defined string sizes on the heap so you aren't stuck with fixed-size arrays.
+
+Safe Input: I added a custom getstring() function (my version of gets). It handles input buffering and prevents buffer overflow.
+
+Core Functions:
+
+strlength: Calculate length.
+
+strcopy / strcats / strncats: Safe copying and concatenation.
+
+strcompare: Manual character comparison.
+
+strreverse / strlower / strupper: In-place string manipulation.
+
+How to Run It
+
+If you want to test it out, you can compile the files together using gcc.
+
+Clone the repository:
+
+git clone [https://github.com/davedhruv96/custom-c-string-library.git](https://github.com/davedhruv96/custom-c-string-library.git)
+cd custom-c-string-library
+
+
+Compile the code:
+
+gcc main.c mystring.c -o my_string_lib
+
+
+Run the program:
+
+./my_string_lib
+>>>>>>> eb008a7f33b8542a490fb44e24424b8b380597a1
