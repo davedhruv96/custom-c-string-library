@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include "mystring.h"
 
-void main()
+int main()
 {
+    char *temp, *temp1;
     int menu, stringSize, n;
     printf("Enter maximum characters for your strings(including null character): ");
     while (scanf("%d", &stringSize) != 1 || stringSize <= 1)
@@ -18,13 +19,12 @@ void main()
     if (s1 == NULL || s2 == NULL)
     {
         printf("Memory allocation failed.\n");
-        return;
+        return 1;
     }
 
     printf("\n--- Welcome to the Custom C String Library ---\n");
     printf("Please enter the first string to start: ");
     getstring(s1, stringSize);
-    // while (getchar() != '\n');
 
     while (1)
     {
@@ -43,12 +43,12 @@ void main()
         printf("0. Exit\n");
         printf("----------------------------------------\n");
         printf("Enter your choice: ");
-        int temp = scanf("%d", &menu);
-        while (temp != 1)
+        int scanCheck = scanf("%d", &menu);
+        while (scanCheck != 1)
         {
             while (getchar() != '\n');
             printf("Menu num is between 0 and 9, reEnter menu: ");
-            temp = scanf("%d", &menu);
+            scanCheck = scanf("%d", &menu);
         }
         switch (menu)
         {
@@ -56,20 +56,22 @@ void main()
             printf("Exiting...\n");
             free(s1);
             free(s2);
-            return;
+            return 0;
 
         case 1:
             printf("Length of S1: %d\n", strlength(s1));
             break;
 
         case 2:
-            if (!realloc(s2, stringSize*sizeof(char)))
+            temp = realloc(s2, stringSize*sizeof(char));
+            if (temp == NULL)
                 {
                     free(s1);
                     free(s2);
                     printf("Memory allocation failed!");
-                    return;
+                    return 1;
                 }
+            s2 = temp;
             strcopy(s1, s2);
             printf("Copied! S2 is now: \"%s\"\n", s2);
             break;
@@ -93,13 +95,15 @@ void main()
             if (strlength(s1) + strlength(s2) >= stringSize)
             {
                 stringSize = strlength(s1) + strlength(s2) + 1;
-                if (!realloc(s1, stringSize*sizeof(char)))
+                temp = realloc(s1, stringSize*sizeof(char));
+                if (temp == NULL)
                 {
                     free(s1);
                     free(s2);
                     printf("Memory allocation failed!");
-                    return;
+                    return 1;
                 }
+                s1 = temp;
             }
             strcats(s1, s2);
             printf("New S1: \"%s\"\n", s1);
@@ -113,13 +117,15 @@ void main()
             if (strlength(s1) + n * sizeof(char) + 1 >= stringSize)
             {
                 stringSize = strlength(s1) + n + 1;
-                if (!realloc(s1, stringSize*sizeof(char)))
+                temp = realloc(s1, stringSize*sizeof(char));
+                if (temp == NULL)
                 {
                     free(s1);
                     free(s2);
                     printf("Memory allocation failed!");
-                    return;
+                    return 1;
                 }
+                s1 = temp;
             }
             strncats(s1, s2, n);
             printf("New S1: \"%s\"\n", s1);
@@ -147,14 +153,24 @@ void main()
                 while (getchar() != '\n');
                 printf("Enter maximum character for the string, string size should be greater than 1: ");
             }
+            temp = realloc(s1, stringSize * sizeof(char));
+            temp1 = realloc(s2, stringSize * sizeof(char));
 
-            if (!realloc(s1, stringSize * sizeof(char)) || !realloc(s2, stringSize * sizeof(char)))
+            if (temp == NULL)
             {
                 free(s1);
                 free(s2);
-                printf("Memory allocation failed!");
-                return;
+                printf("Memory allocation failed for s1!");
+                return 1;
             }
+            s1 = temp;
+            if(temp1 == NULL){
+                free(s1);
+                free(s2);
+                printf("Memory allocation failed for s2!");
+                return 1;
+            }
+            s2 = temp1;
             printf("Enter new S1: ");
             getstring(s1, stringSize);
             break;
@@ -164,4 +180,5 @@ void main()
             continue;
         }
     }
+    return 0;
 }
