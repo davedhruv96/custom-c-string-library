@@ -5,14 +5,14 @@
 int main()
 {
     char *temp, *temp1;
-    int menu, stringSize, n;
+    unsigned int menu, stringSize = 0, n;
     printf("Enter maximum characters for your strings(including null character): ");
-    while (scanf("%d", &stringSize) != 1 || stringSize <= 1)
+    while (scanf("%d", &stringSize) != 1 || stringSize >= 65536)
     {
-        while (getchar() != '\n')
-            ;
+        while (getchar() != '\n');
         printf("Enter maximum character for the string, string size should be greater than 1: ");
     }
+
     char *s1 = malloc(stringSize * sizeof(char));
     char *s2 = malloc(stringSize * sizeof(char));
 
@@ -24,7 +24,9 @@ int main()
 
     printf("\n--- Welcome to the Custom C String Library ---\n");
     printf("Please enter the first string to start: ");
-    getstring(s1, stringSize);
+    if(getstring(s1, stringSize) != 0){
+        printf("String characters overflow! Increase the max. string size. Or there could be some other errors.\n");
+    }
 
     while (1)
     {
@@ -78,7 +80,9 @@ int main()
 
         case 3:
             printf("Enter S2 to compare: ");
-            getstring(s2, stringSize);
+            if(getstring(s1, stringSize) != 0){
+                printf("String characters overflow! Increase the max. string size. Or there could be some other errors.\n");
+            }
             if (strcompare(s1, s2))
             {
                 printf("Result: The strings are IDENTICAL.\n");
@@ -96,6 +100,7 @@ int main()
             {
                 stringSize = strlength(s1) + strlength(s2) + 1;
                 temp = realloc(s1, stringSize*sizeof(char));
+                temp1 = realloc(s2, stringSize*sizeof(char));
                 if (temp == NULL)
                 {
                     free(s1);
@@ -104,6 +109,13 @@ int main()
                     return 1;
                 }
                 s1 = temp;
+                if(temp1 == NULL){
+                    free(s1);
+                    free(s2);
+                    printf("Memory allocation failed!");
+                    return 1;
+                }
+                s2 = temp1;
             }
             strcats(s1, s2);
             printf("New S1: \"%s\"\n", s1);
@@ -113,11 +125,17 @@ int main()
             printf("Enter string to append: ");
             getstring(s2, stringSize);
             printf("How many characters? ");
-            scanf("%d", &n);
+            while (scanf("%d", &n) != 1 || n >= 65536)
+            {
+                while (getchar() != '\n');
+                printf("The number of characters to be appended should be a positive integer: ");
+            }
+            
             if (strlength(s1) + n * sizeof(char) + 1 >= stringSize)
             {
                 stringSize = strlength(s1) + n + 1;
                 temp = realloc(s1, stringSize*sizeof(char));
+                temp1 = realloc(s2, stringSize*sizeof(char));
                 if (temp == NULL)
                 {
                     free(s1);
@@ -126,6 +144,13 @@ int main()
                     return 1;
                 }
                 s1 = temp;
+                if(temp1 == NULL){
+                    free(s1);
+                    free(s2);
+                    printf("Memory allocation failed!");
+                    return 1;
+                }
+                s2 = temp1;
             }
             strncats(s1, s2, n);
             printf("New S1: \"%s\"\n", s1);
@@ -172,7 +197,9 @@ int main()
             }
             s2 = temp1;
             printf("Enter new S1: ");
-            getstring(s1, stringSize);
+            if(getstring(s1, stringSize) != 0){
+                printf("String characters overflow! Increase the max. string size. Or there could be some other errors.\n");
+            }
             break;
 
         default:
