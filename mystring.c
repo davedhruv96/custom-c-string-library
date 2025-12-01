@@ -1,17 +1,21 @@
 #include <stdio.h>
 #include "mystring.h"
 
-void getstring(char s1[], int stringSize)
+int getstring(char s1[], int stringSize)
 {
     int i = 0;
     while (1)
     {
+        char c = 'a';
         if (i == stringSize - 1)
         {
             s1[i] = '\0';
-            break;
+            return 1;
         }
-        scanf("%c", &s1[i]);
+        if(scanf("%c", &s1[i]) == EOF){
+            s1[i] = '\0';
+            return 1;
+        }
 
         if (i == 0 && s1[i] == '\n')
         {
@@ -20,7 +24,7 @@ void getstring(char s1[], int stringSize)
         if (s1[i] == '\n')
         {
             s1[i] = '\0';
-            break;
+            return 0;
         }
         i++;
     }
@@ -28,6 +32,9 @@ void getstring(char s1[], int stringSize)
 
 int strlength(char s1[])
 {
+    if(s1 == NULL){
+        return 0;
+    }
     int len = 0;
     for (int i = 0; s1[i] != '\0'; i++)
     {
@@ -38,6 +45,9 @@ int strlength(char s1[])
 
 void strcopy(char s1[], char s2[])
 {
+    if(s1 == NULL || s2 == NULL){
+        return;
+    }
     int i;
     int len = strlength(s1);
     for (i = 0; i < len; i++)
@@ -49,6 +59,9 @@ void strcopy(char s1[], char s2[])
 
 int strcompare(char s1[], char s2[])
 {
+    if(s1 == NULL && s2 ==NULL){
+        return 1;
+    }
     int len1 = strlength(s1);
     int len2 = strlength(s2);
     if (len1 != len2)
@@ -70,6 +83,9 @@ int strcompare(char s1[], char s2[])
 
 void strcats(char s1[], char s2[])
 {
+    if(s2 == NULL){
+        return;
+    }
     int i;
     int len = strlength(s1);
     for (i = 0; s2[i] != '\0'; i++)
@@ -81,6 +97,9 @@ void strcats(char s1[], char s2[])
 
 void strncats(char s1[], char s2[], int n)
 {
+    if(s2 == NULL){
+        return;
+    }
     int i;
     int len = strlength(s1);
     for (i = 0; i < n && s2[i] != '\0'; i++)
@@ -92,6 +111,9 @@ void strncats(char s1[], char s2[], int n)
 
 void strreverse(char s1[])
 {
+    if(s1 == NULL){
+        return;
+    }
     char temp;
     int len = strlength(s1);
     for (int i = 0; i < len / 2; i++)
@@ -104,6 +126,9 @@ void strreverse(char s1[])
 
 void strlower(char s1[])
 {
+    if(s1 == NULL){
+        return;
+    }
     for (int i = 0; s1[i] != '\0'; i++)
     {
         if (s1[i] >= 'A' && s1[i] <= 'Z')
@@ -115,6 +140,9 @@ void strlower(char s1[])
 
 void strupper(char s1[])
 {
+    if(s1 == NULL){
+        return;
+    }
     for (int i = 0; s1[i] != '\0'; i++)
     {
         if (s1[i] >= 'a' && s1[i] <= 'z')
