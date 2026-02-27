@@ -1,17 +1,24 @@
 #ifndef MYSTRING_H
 #define MYSTRING_H
 
+typedef struct{
+    char *data;
+    size_t nullCharIndex;
+    size_t capacity;
+} DynamicString;
 
-int getstring(char s1[], int stringSize);
+int getstring(DynamicString *s);
+DynamicString* createString(size_t initial_size);
 
-
-int strlength(char s1[]);
-void strcopy(char s1[], char s2[]);
-int strcompare(char s1[], char s2[]);
-void strcats(char s1[], char s2[]);
-void strncats(char s1[], char s2[], int n);
-void strreverse(char s1[]);
-void strlower(char s1[]);
-void strupper(char s1[]);
+size_t strlength(char*);
+void strcopy(DynamicString*, DynamicString*);
+int strcompare(char*, char*);
+void strcats(DynamicString*, DynamicString*);
+void strncats(DynamicString*, DynamicString*, size_t);
+void strreverse(char*);
+void strlower(char*);
+void strupper(char*);
+int ensureCapacity(DynamicString*, size_t);
+void destroyString(DynamicString* s);
 
 #endif
