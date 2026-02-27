@@ -25,15 +25,13 @@ int getstring(DynamicString *s)
     {
         if (i == s->capacity - 1)
         {
-            if(ensureCapacity(s, s->capacity*2) == 0){
-                s->data[i] = '\0';
-                s->nullCharIndex = i;
+            if(!ensureCapacity(s, s->capacity*2)){
                 printf("Memory allocation failed!");
                 return -1;
             }
             continue;
         }
-        if (scanf("%c", &s->data[i]) == EOF)
+        if (scanf("%c", s->data[i]) == EOF)
         {
             s->data[i] = '\0';
             s->nullCharIndex = i;
@@ -87,23 +85,21 @@ void strcopy(DynamicString *s1, DynamicString *s2)
     
 }
 
-int strcompare(char* s1, char* s2)
+int strcompare(DynamicString* s1, DynamicString* s2)
 {
-    if (s1 == NULL && s2 == NULL)
+    if (s1->data == NULL && s2->data == NULL)
     {
         return 1;
     }
-    int len1 = strlength(s1);
-    int len2 = strlength(s2);
-    if (len1 != len2)
+    if (s1->nullCharIndex != s2->nullCharIndex)
     {
         return 0;
     }
     else
     {
-        for (int i = 0; i < len1; i++)
+        for (int i = 0; i < s1->nullCharIndex; i++)
         {
-            if (s1[i] != s2[i])
+            if (s1->data[i] != s2->data[i])
             {
                 return 0;
             }
@@ -118,13 +114,14 @@ void strcats(DynamicString *s1, DynamicString *s2)
     {
         return;
     }
-    if(ensureCapacity(s1, s1->capacity + s2->capacity)){
+    if(ensureCapacity(s1, s1->nullCharIndex + s2->nullCharIndex + 1)){
         int i;
-        for (i = 0; i <= s2->nullCharIndex; i++)
+        for (i = 0; i < s2->nullCharIndex; i++)
         {
             s1->data[s1->nullCharIndex + i] = s2->data[i];
         }
-        s1->nullCharIndex += (i - 1);
+        s1->data[s1->nullCharIndex + i] = '\0';
+        s1->nullCharIndex += i;
     }
     else{
         printf("Memory allocation failed!");
@@ -140,7 +137,7 @@ void strncats(DynamicString *s1, DynamicString *s2, size_t n)
     }
 
     int i;
-    if(ensureCapacity(s1, s1->capacity + s2->capacity + (size_t)n)){
+    if(ensureCapacity(s1, s1->nullCharIndex + s2->nullCharIndex + n + 1)){
         for (i = 0; i < n && s2->data[i] != '\0'; i++)
         {
             s1->data[s1->nullCharIndex + i] = s2->data[i];
@@ -155,48 +152,47 @@ void strncats(DynamicString *s1, DynamicString *s2, size_t n)
     
 }
 
-void strreverse(char* s1)
+void strreverse(DynamicString* s)
 {
-    if (s1 == NULL)
+    if (s->data == NULL)
     {
         return;
     }
     char temp;
-    int len = strlength(s1);
-    for (int i = 0; i < len / 2; i++)
+    for (int i = 0; i < (s->nullCharIndex) / 2; i++)
     {
-        temp = s1[i];
-        s1[i] = s1[len - i - 1];
-        s1[len - i - 1] = temp;
+        temp = s->data[i];
+        s->data[i] = s->data[s->nullCharIndex - i - 1];
+        s->data[s->nullCharIndex - i - 1] = temp;
     }
 }
 
-void strlower(char* s1)
+void strlower(DynamicString* s)
 {
-    if (s1 == NULL)
+    if (s->data == NULL)
     {
         return;
     }
-    for(int i=0; s1[i] != '\0'; i++)
+    for(int i=0; s->data[i] != '\0'; i++)
     {
-        if (s1[i] >= 'A' && s1[i] <= 'Z')
+        if (s->data[i] >= 'A' && s->data[i] <= 'Z')
         {
-            s1[i] += 32;
+            s->data[i] += 32;
         }
     }
 }
 
-void strupper(char* s1)
+void strupper(DynamicString* s)
 {
-    if (s1 == NULL)
+    if (s->data == NULL)
     {
         return;
     }
-    for(int i=0; s1[i] != '\0'; i++)
+    for(int i=0; s->data[i] != '\0'; i++)
     {
-        if (s1[i] >= 'a' && s1[i] <= 'z')
+        if (s->data[i] >= 'a' && s->data[i] <= 'z')
         {
-            s1[i] -= 32;
+            s->data[i] -= 32;
         }
     }
 }
