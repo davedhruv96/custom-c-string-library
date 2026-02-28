@@ -1,5 +1,6 @@
 #ifndef MYSTRING_H
 #define MYSTRING_H
+#include <stddef.h>
 
 typedef struct{
     char *data;

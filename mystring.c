@@ -10,6 +10,7 @@ DynamicString* createString(size_t initial_size){ //constructor
     
     s->data = malloc(initial_size);
     if(!s->data){
+        free(s);
         return NULL;
     }
     s->capacity = initial_size;
@@ -31,7 +32,7 @@ int getstring(DynamicString *s)
             }
             continue;
         }
-        if (scanf("%c", s->data[i]) == EOF)
+        if (scanf("%c", &s->data[i]) == EOF)
         {
             s->data[i] = '\0';
             s->nullCharIndex = i;
@@ -71,7 +72,7 @@ void strcopy(DynamicString *s1, DynamicString *s2)
         return;
     }
     int i;
-    if(ensureCapacity(s1, s2->capacity)){
+    if(ensureCapacity(s1, s2->nullCharIndex + 1)){
         for (i = 0; i < s2->nullCharIndex; i++)
         {
             s1->data[i] = s2->data[i];
@@ -137,7 +138,8 @@ void strncats(DynamicString *s1, DynamicString *s2, size_t n)
     }
 
     int i;
-    if(ensureCapacity(s1, s1->nullCharIndex + s2->nullCharIndex + n + 1)){
+    size_t toAdd = (s2->nullCharIndex < n)? s2->nullCharIndex : n;
+    if(ensureCapacity(s1, s1->nullCharIndex + toAdd + 1)){
         for (i = 0; i < n && s2->data[i] != '\0'; i++)
         {
             s1->data[s1->nullCharIndex + i] = s2->data[i];
