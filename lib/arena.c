@@ -13,6 +13,7 @@ Arena *arenaCreate(Arena *arena, u64 size) {
   if (!arena->buffer) {
     return NULL;
   }
+
   arena->capacity = size;
   arena->bottom = 0;
   arena->top = arena->capacity;
@@ -34,7 +35,7 @@ void *arenaPush(Arena *arena, u64 size) {
   return ptr;
 }
 
-void *arenaPushFromEnd(Arena *arena, u64 size) {
+void *arenaPushTemp(Arena *arena, u64 size) {
   u64 currentOffset = alignOffset(arena->top, sizeof(void *));
   if (currentOffset + size + arena->bottom > arena->capacity) {
     return NULL;
@@ -50,6 +51,8 @@ void arenaPopFromEnd(Arena *arena, u64 size) {
   if (arena->top == arena->capacity) {
     return;
   }
+  // popping to savemark will go here
+  arena->top = arena->capacity;
 }
 
 void arenaClear(Arena *arena) { arena->bottom = 0; }
