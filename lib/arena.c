@@ -8,7 +8,11 @@ struct Arena {
   u64 top;
 };
 
-Arena *arenaCreate(Arena *arena, u64 size) {
+Arena *arenaCreate(u64 size) {
+  Arena *arena = (Arena *)malloc(sizeof(Arena));
+  if (!arena) {
+    return NULL;
+  }
   arena->buffer = (u8 *)malloc(size);
   if (!arena->buffer) {
     return NULL;
@@ -35,6 +39,14 @@ void *arenaPush(Arena *arena, u64 size) {
   return ptr;
 }
 
+void *arenaPushObject(Arena *arena, u64 size, u64 *offsetInArena) {
+  void *ptr = arenaPush(arena, size);
+  if (ptr) {
+    *offsetInArena = arena->bottom - size; // bottor or top object ..?
+  }
+  return ptr;
+}
+
 void *arenaPushTemp(Arena *arena, u64 size) {
   u64 currentOffset = alignOffset(arena->top, sizeof(void *));
   if (currentOffset + size + arena->bottom > arena->capacity) {
@@ -47,13 +59,15 @@ void *arenaPushTemp(Arena *arena, u64 size) {
   return ptr;
 }
 
-void arenaPopFromEnd(Arena *arena, u64 size) {
-  if (arena->top == arena->capacity) {
-    return;
-  }
-  // popping to savemark will go here
-  arena->top = arena->capacity;
-}
+// void arenaPopFromEnd(Arena *arena, u64 size) {
+//   if (arena->top == arena->capacity) {
+//     return;
+//   }
+//   // popping to savemark will go here
+//   arena->top = arena->capacity;
+// }
+
+void *getPtrToBuffer(Arena *arena) { return arena->buffer; }
 
 void arenaClear(Arena *arena) { arena->bottom = 0; }
 

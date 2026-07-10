@@ -10,15 +10,26 @@ typedef struct {
 } String;
 
 typedef struct sObject {
-  unsigned char marked;
-  String str;
+  b8 marked;
+  String *str;
+  u64 offsetInArena;
   struct sObject *next;
 } Object;
 
 typedef struct VM VM;
 
-VM *vmCreate();
+VM *createVM(u64 arenaSize);
 
-void vmDestroy(VM *vm);
+void destroyVM(VM *vm);
+
+Object *newObject(VM *vm);
+
+void push(VM *vm, Object *object);
+
+Object *pop(VM *vm);
+
+void mark(Object *object);
+
+void markAll(VM *vm);
 
 #endif
