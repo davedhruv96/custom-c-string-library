@@ -11,6 +11,7 @@ int main() {
   printf("Enter string: ");
   getString(ob1->str);
   push(vm, ob1);
+  printStringToTerm(ob1->str);
   destroyVM(vm);
 
   return 0;

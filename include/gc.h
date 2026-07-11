@@ -1,34 +1,23 @@
 #ifndef GC_H
 #define GC_H
 
-#include "def.h"
+#include "vm.h"
 
-typedef struct {
-  char *data;
+typedef struct String {
+  u64 size;
+  b8 marked;
+  u64 offsetInArena;
+  struct String *next;
   u64 length;
   u64 capacity;
+  char *data;
 } String;
 
-typedef struct sObject {
-  b8 marked;
-  String *str;
-  u64 offsetInArena;
-  struct sObject *next;
-} Object;
+void push(VM *vm, String *str);
 
-typedef struct VM VM;
+String *pop(VM *vm);
 
-VM *createVM(u64 arenaSize);
-
-void destroyVM(VM *vm);
-
-Object *newObject(VM *vm);
-
-void push(VM *vm, Object *object);
-
-Object *pop(VM *vm);
-
-void mark(Object *object);
+void mark(String *str);
 
 void markAll(VM *vm);
 

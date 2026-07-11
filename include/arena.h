@@ -1,7 +1,7 @@
 #ifndef ARENA_H
 #define ARENA_H
 
-#include "def.h"
+#include "vm.h"
 
 Arena *arenaCreate(u64 size);
 

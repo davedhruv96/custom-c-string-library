@@ -67,7 +67,11 @@ void *arenaPushTemp(Arena *arena, u64 size) {
 //   arena->top = arena->capacity;
 // }
 
-void *getPtrToBuffer(Arena *arena) { return arena->buffer; }
+void *growObject() {}
+
+void *getPtrToBuffer(Arena *arena) {
+  return arena->buffer;
+} // only for the ptr start of string allocation, as of 11th july
 
 void arenaClear(Arena *arena) { arena->bottom = 0; }
 

@@ -1,9 +1,7 @@
-#ifndef DEF_H
-#define DEF_H
+#ifndef VM_H
+#define VM_H
 
 #include <stdint.h>
-
-typedef struct Arena Arena;
 
 typedef int8_t i8;
 typedef int16_t i16;
@@ -20,5 +18,13 @@ typedef i32 b32;
 #define KiB(n) ((u64)(n) << 10)
 #define MiB(n) ((u64)(n) << 20)
 #define GiB(n) ((u64)(n) << 30)
+
+typedef struct VM VM;
+
+typedef struct Arena Arena;
+
+VM *createVM(u64 arenaSize);
+
+void destroyVM(VM *vm);
 
 #endif
