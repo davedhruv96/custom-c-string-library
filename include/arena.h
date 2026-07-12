@@ -1,7 +1,9 @@
 #ifndef ARENA_H
 #define ARENA_H
 
-#include "vm.h"
+#include "types.h"
+
+typedef struct Arena Arena;
 
 Arena *arenaCreate(u64 size);
 
