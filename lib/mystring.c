@@ -1,5 +1,6 @@
 #include "mystring.h"
 #include "arena.h"
+#include "vm.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -22,18 +23,22 @@ String *createString(Arena *arena, u64 initialSize) {
   return str;
 }
 
-int ensureCapacity(Arena *arena, String *str, u64 size) {
-  if (!arena || !str) {
-    return -1;
+// will be only used by current file, therefore no need to declare it in header
+// file
+String *ensureCapacity(VM *vm, String *str, u64 size) {
+  if (!str) {
+    return NULL;
   }
 
   if (str->capacity >= size) {
-    return 1;
+    return str;
   }
-  return 1;
+  String *newstr = createString(getArena(vm), size);
+  copystr(vm, str, newstr);
+  return newstr;
 }
 
-int getString(String *str) {
+int getString(VM *vm, String *str) {
   if (!str) {
     return -1;
   }
@@ -43,11 +48,15 @@ int getString(String *str) {
     ch = getchar();
   }
   while ((ch != (int)'\n') && (ch != EOF)) {
+    if (str->size <= len + 1 + str->length) {
+      str = ensureCapacity(vm, str, len + 1);
+    }
     str->data[len] = (char)ch;
     ch = getchar();
     len++;
   }
   str->length = len;
+  str->data[len] = '\0';
   return 0;
 }
 
@@ -56,4 +65,19 @@ void printStringToTerm(String *str) {
     printf("%c", str->data[i]);
   }
   printf("\n");
+}
+
+// overwrites "copyTo" string
+void copystr(VM *vm, String *copyFrom, String *copyTo) {
+  if (!vm || !copyFrom || !copyTo) {
+    return;
+  }
+
+  for (int i = 0; i < copyFrom->length; i++) {
+    if (copyTo->capacity < i + 1) {
+      copyTo = ensureCapacity(vm, copyTo, copyTo->capacity * 2);
+    }
+    copyTo->data[i] = copyFrom->data[i];
+    copyTo->length++;
+  }
 }

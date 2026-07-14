@@ -11,8 +11,14 @@ VM *createVM(u64 arenaSize);
 
 void destroyVM(VM *vm);
 
-void push(VM *vm, String *str);
+u64 push(VM *vm, String *str);
 
 String *pop(VM *vm);
+
+Arena *getArena(VM *vm);
+
+b8 isValidIndex(VM *vm, u64 index);
+
+String **getRoots(VM *vm);
 
 #endif

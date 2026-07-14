@@ -1,3 +1,4 @@
+#include "mystring.h"
 #include <arena.h>
 #include <stdlib.h>
 
@@ -39,13 +40,26 @@ void *arenaPush(Arena *arena, u64 size) {
   return ptr;
 }
 
-void *arenaPushObject(Arena *arena, u64 size, u64 *offsetInArena) {
+void *arenaPushPersistent(Arena *arena, u64 size, u64 *offsetInArena) {
   void *ptr = arenaPush(arena, size);
   if (ptr) {
     *offsetInArena = arena->bottom - size; // bottor or top object ..?
   }
   return ptr;
 }
+//
+// String *arenaAllocPersistent(Arena *arena, String *str) {
+//   if (!arena || !str) {
+//     return NULL;
+//   }
+//
+//   String *string = createString(arena, str->capacity * 2);
+//   if (!string) {
+//     return NULL;
+//   }
+//
+//   return string;
+// }
 
 void *arenaPushTemp(Arena *arena, u64 size) {
   u64 currentOffset = alignOffset(arena->top, sizeof(void *));
@@ -59,19 +73,16 @@ void *arenaPushTemp(Arena *arena, u64 size) {
   return ptr;
 }
 
-// void arenaPopFromEnd(Arena *arena, u64 size) {
-//   if (arena->top == arena->capacity) {
-//     return;
-//   }
-//   // popping to savemark will go here
-//   arena->top = arena->capacity;
-// }
-
-void *growObject() {}
+void arenaPopTemp(Arena *arena) {
+  if (arena->top == arena->capacity) {
+    return;
+  }
+  arena->top = arena->capacity;
+}
 
 void *getPtrToBuffer(Arena *arena) {
   return arena->buffer;
-} // only for the ptr start of string allocation, as of 11th july
+} // only for the pointer to the start of string allocation: as of 11th july
 
 void arenaClear(Arena *arena) { arena->bottom = 0; }
 

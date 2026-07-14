@@ -50,15 +50,16 @@ void destroyVM(VM *vm) {
   }
 }
 
-void push(VM *vm, String *str) {
+u64 push(VM *vm, String *str) {
   if (!vm || !str) {
-    return;
+    return -1;
   }
 
   // if(vm->numObjects >= vm->maxObjects){
   //
   // }
   vm->roots[vm->rootsCount++] = str;
+  return vm->rootsCount - 1;
 }
 
 String *pop(VM *vm) {
@@ -73,4 +74,26 @@ String *pop(VM *vm) {
   // the string will be there in arena,
   // but next sweep or push will overwrite
   // it, no need to bother
+}
+
+Arena *getArena(VM *vm) {
+  if (!vm) {
+    return NULL;
+  }
+
+  return vm->arena;
+}
+
+b8 isValidIndex(VM *vm, u64 index) {
+  if (index < vm->rootsCount) {
+    return 1;
+  }
+  return 0;
+}
+
+String **getRoots(VM *vm) {
+  if (vm) {
+    return vm->roots;
+  }
+  return NULL;
 }

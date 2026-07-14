@@ -5,6 +5,8 @@
 
 typedef struct Arena Arena;
 
+typedef struct String String;
+
 Arena *arenaCreate(u64 size);
 
 u64 alignOffset(u64 currentOffset, u64 alignment);
@@ -15,9 +17,12 @@ void arenaClear(Arena *arena);
 
 void arenaDestroy(Arena *arena);
 
-void *arenaPushTemp(Arena *arena, u64 size);
+void *arenaPushTemp(Arena *arena, u64 size); // for temporary string
 
-void *arenaPushObject(Arena *arena, u64 size, u64 *offsetInArena);
+void *arenaPushPersistent(Arena *arena, u64 size,
+                          u64 *offsetInArena); // for persistent string
+
+void arenaPopTemp(Arena *arena);
 
 void *getPtrToBuffer(Arena *arena);
 

@@ -18,10 +18,10 @@ typedef struct Arena Arena;
 
 String *createString(Arena *arena, u64 initialSize);
 
-String *reallocString(Arena *arena, String *str);
-
-int getString(String *str);
+int getString(VM *vm, String *str);
 
 void printStringToTerm(String *str);
+
+void copystr(VM *vm, String *copyFrom, String *copyTo);
 
 #endif
