@@ -1,20 +1,12 @@
-#include "gc.h"
-#include "mystring.h"
-#include "strlib.h"
-#include "types.h"
-#include "vm.h"
+#include "include/stringlib.h"
+#include "src/types.h"
 #include <stdio.h>
 
-int main() {
-  printf("Hello And Welcome to SUPER STRING!\n");
-
-  VM *vm = createVM(MiB(1));
-
-  u64 index = newString(vm, 10);
-  printf("Enter the string : ");
-  getstr(vm, index);
-  printstr(vm, index);
-
-  destroyVM(vm);
+int main(void) {
+  sl_init(MiB(1));
+  StringHandle h =
+      sl_create_with_capacity("Hello is This Working or not!", 300);
+  printf("%s\n", sl_cstr(h));
+  sl_shutdown();
   return 0;
 }

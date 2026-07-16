@@ -25,20 +25,21 @@ String *createString(Arena *arena, u64 initialSize) {
 
 // will be only used by current file, therefore no need to declare it in header
 // file
-String *ensureCapacity(VM *vm, String *str, u64 size) {
+String *ensureCapacity(String *str, u64 size) {
   if (!str) {
     return NULL;
   }
 
-  if (str->capacity >= size) {
+  if (str->capacity > size) {
     return str;
   }
-  String *newstr = createString(getArena(vm), size);
-  copystr(vm, str, newstr);
+  String *newstr = createString(getArena(), size * 2);
+  copystr(str, newstr);
+  unmark(str);
   return newstr;
 }
 
-int getString(VM *vm, String *str) {
+int getString(String *str) {
   if (!str) {
     return -1;
   }
@@ -49,7 +50,7 @@ int getString(VM *vm, String *str) {
   }
   while ((ch != (int)'\n') && (ch != EOF)) {
     if (str->size <= len + 1 + str->length) {
-      str = ensureCapacity(vm, str, len + 1);
+      str = ensureCapacity(str, len + 1);
     }
     str->data[len] = (char)ch;
     ch = getchar();
@@ -68,16 +69,37 @@ void printStringToTerm(String *str) {
 }
 
 // overwrites "copyTo" string
-void copystr(VM *vm, String *copyFrom, String *copyTo) {
-  if (!vm || !copyFrom || !copyTo) {
+void copystr(String *copyFrom, String *copyTo) {
+  if (!copyFrom || !copyTo) {
     return;
   }
-
-  for (int i = 0; i < copyFrom->length; i++) {
+  copyTo->length = 0;
+  for (u32 i = 0; i < copyFrom->length; i++) {
     if (copyTo->capacity < i + 1) {
-      copyTo = ensureCapacity(vm, copyTo, copyTo->capacity * 2);
+      copyTo = ensureCapacity(copyTo, copyTo->capacity * 2);
     }
     copyTo->data[i] = copyFrom->data[i];
     copyTo->length++;
   }
+}
+
+void copystr_char(const char *copyFrom, String *copyTo) {
+  if (!copyFrom || !copyTo) {
+    return;
+  }
+  copyTo->length = 0;
+  int i = 0;
+  for (i = 0; copyFrom[i] != '\0'; i++) {
+    copyTo = ensureCapacity(copyTo, i + 1);
+    copyTo->data[i] = copyFrom[i];
+    copyTo->length++;
+  }
+  copyTo->data[i] = '\0';
+}
+
+void unmark(String *str) {
+  if (!str) {
+    return;
+  }
+  str->marked = 0;
 }

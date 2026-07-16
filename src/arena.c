@@ -1,5 +1,5 @@
+#include "arena.h"
 #include "mystring.h"
-#include <arena.h>
 #include <stdlib.h>
 
 struct Arena {

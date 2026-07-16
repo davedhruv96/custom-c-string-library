@@ -1,16 +1,37 @@
 #include "vm.h"
 #include "arena.h"
 #include "gc.h"
+#include "mystring.h"
+#include "stringlib.h"
+#include "types.h"
 #include <stdlib.h>
+#include <strings.h>
 
 struct VM {
   Arena *arena;
 
   String *firstString;
   String **roots;
-  u64 rootsCount;
-  u64 rootsCapacity;
+  u32 rootsCount;
+  u32 rootsCapacity;
 };
+
+static VM *g_vm = NULL;
+
+b8 sl_init(u64 memSize) {
+  if (g_vm) {
+    return 0;
+  }
+  g_vm = createVM(memSize);
+  return 1;
+}
+
+void sl_shutdown(void) {
+  if (g_vm) {
+    destroyVM(g_vm);
+    g_vm = NULL;
+  }
+}
 
 VM *createVM(u64 arenaSize) {
   Arena *arena = arenaCreate(arenaSize);
@@ -50,17 +71,25 @@ void destroyVM(VM *vm) {
   }
 }
 
-u64 push(VM *vm, String *str) {
-  if (!vm || !str) {
+u32 push(String *str) {
+  if (!g_vm || !str) {
     return -1;
   }
 
   // if(vm->numObjects >= vm->maxObjects){
   //
   // }
-  vm->roots[vm->rootsCount++] = str;
-  return vm->rootsCount - 1;
+  g_vm->roots[g_vm->rootsCount++] = str;
+  return g_vm->rootsCount - 1;
 }
+
+// String *popTarget(VM *vm, String *str) {
+//   for (u64 i = 0; i < vm->rootsCount; i++) {
+//     if (vm->roots[i] == str) {
+//       removeTarget(vm, i);
+//     }
+//   }
+// }
 
 String *pop(VM *vm) {
   if (!vm) {
@@ -76,24 +105,33 @@ String *pop(VM *vm) {
   // it, no need to bother
 }
 
-Arena *getArena(VM *vm) {
-  if (!vm) {
+Arena *getArena() {
+  if (!g_vm) {
     return NULL;
   }
 
-  return vm->arena;
+  return g_vm->arena;
 }
 
-b8 isValidIndex(VM *vm, u64 index) {
-  if (index < vm->rootsCount) {
+b8 isValidIndex(u32 index) {
+  if (index < g_vm->rootsCount) {
     return 1;
   }
   return 0;
 }
 
-String **getRoots(VM *vm) {
-  if (vm) {
-    return vm->roots;
+String **getRoots() {
+  if (g_vm) {
+    return g_vm->roots;
   }
   return NULL;
+}
+
+void removeFromStack(StringHandle indexToRm) {
+  if (!isValidIndex(indexToRm)) {
+    return;
+  }
+
+  unmark(g_vm->roots[indexToRm]);
+  g_vm->roots[indexToRm] = NULL;
 }

@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Iinclude -g
 
-execute: main.c lib/mystring.c lib/arena.c lib/gc.c lib/vm.c lib/strlib.c
-	$(CC) $(CFLAGS) -o execute main.c lib/mystring.c lib/arena.c lib/gc.c lib/vm.c lib/strlib.c
+execute: main.c src/mystring.c src/arena.c src/gc.c src/vm.c src/stringlib.c
+	$(CC) $(CFLAGS) -o execute main.c src/mystring.c src/arena.c src/gc.c src/vm.c src/stringlib.c
 
 debug:
 	gdb ./execute

@@ -18,10 +18,14 @@ typedef struct Arena Arena;
 
 String *createString(Arena *arena, u64 initialSize);
 
-int getString(VM *vm, String *str);
+int getString(String *str);
 
 void printStringToTerm(String *str);
 
-void copystr(VM *vm, String *copyFrom, String *copyTo);
+void copystr(String *copyFrom, String *copyTo);
+
+void copystr_char(const char *copyFrom, String *copyTo);
+
+void unmark(String *str);
 
 #endif
