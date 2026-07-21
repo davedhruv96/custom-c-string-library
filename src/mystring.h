@@ -1,7 +1,9 @@
 #ifndef MYSTRING_H
 #define MYSTRING_H
 
+#include "stringlib.h"
 #include "types.h"
+#include "vm.h"
 
 typedef struct String {
   u64 size;
@@ -18,11 +20,11 @@ typedef struct Arena Arena;
 
 String *createString(Arena *arena, u64 initialSize);
 
-int getString(String *str);
+int getString(StringHandle h);
 
 void printStringToTerm(String *str);
 
-void copystr(String *copyFrom, String *copyTo);
+void copyString(StringHandle h1, StringHandle h2);
 
 void copystr_char(const char *copyFrom, String *copyTo);
 

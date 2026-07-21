@@ -23,45 +23,58 @@ String *createString(Arena *arena, u64 initialSize) {
   return str;
 }
 
-// will be only used by current file, therefore no need to declare it in header
-// file
-String *ensureCapacity(String *str, u64 size) {
+b8 shouldGrow(String *str, u64 neededSize) {
   if (!str) {
-    return NULL;
+    return 0;
   }
-
-  if (str->capacity > size) {
-    return str;
-  }
-  String *newstr = createString(getArena(), size * 2);
-  copystr(str, newstr);
-  unmark(str);
-  return newstr;
+  return str->capacity < neededSize;
 }
 
-int getString(String *str) {
-  if (!str) {
+void growString(StringHandle h, u64 minCapacity) {
+  if (!isValidIndex(h)) {
+    return;
+  }
+  String **roots = getRoots();
+  if (!roots)
+    return;
+
+  String *newstr = createString(getArena(), minCapacity * 2);
+  copyString(roots[h], newstr);
+  unmark(roots[h]);
+
+  roots[h] = newstr;
+  return;
+}
+
+int getString(StringHandle h) {
+  if (!isValidIndex(h)) {
     return -1;
   }
+  String **roots = getRoots();
+  String *string = roots[h];
+  string->length = 0;
+  if (!roots)
+    return -1;
   u64 len = 0;
   int ch = getchar();
   while (ch == '\n') {
     ch = getchar();
   }
   while ((ch != (int)'\n') && (ch != EOF)) {
-    if (str->size <= len + 1 + str->length) {
-      str = ensureCapacity(str, len + 1);
+    if (shouldGrow(string,
+                   len + 1)) { // note to self: neededSize should be changed
+      growString(h, len + 1);
     }
-    str->data[len] = (char)ch;
+    string->data[len] = (char)ch;
     ch = getchar();
     len++;
   }
-  str->length = len;
-  str->data[len] = '\0';
+  string->length = len;
+  string->data[len] = '\0';
   return 0;
 }
 
-void printStringToTerm(String *str) {
+void printStringToTerm(String *str) { // temporary debugging function
   for (u64 i = 0; i < str->length; i++) {
     printf("%c", str->data[i]);
   }
@@ -69,14 +82,20 @@ void printStringToTerm(String *str) {
 }
 
 // overwrites "copyTo" string
-void copystr(String *copyFrom, String *copyTo) {
-  if (!copyFrom || !copyTo) {
+void copyString(StringHandle h1, StringHandle h2) {
+  if (!isValidIndex(h1) || !isValidIndex(h2)) {
     return;
   }
-  copyTo->length = 0;
+  String **roots = getRoots();
+  if (!roots)
+    return;
+
+  String *copyFrom = roots[h1];
+  String *copyTo = roots[h2];
+
   for (u32 i = 0; i < copyFrom->length; i++) {
-    if (copyTo->capacity < i + 1) {
-      copyTo = ensureCapacity(copyTo, copyTo->capacity * 2);
+    if (shouldGrow(copyTo, copyTo->length)) {
+      growString(h2, copyTo->length);
     }
     copyTo->data[i] = copyFrom->data[i];
     copyTo->length++;
