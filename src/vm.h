@@ -25,4 +25,10 @@ String **getRoots();
 
 void removeFromStack(StringHandle strToRemove);
 
+void markall();
+
+void gc();
+
+void link_string(String *str);
+
 #endif

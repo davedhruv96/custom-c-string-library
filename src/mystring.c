@@ -30,6 +30,22 @@ b8 shouldGrow(String *str, u64 neededSize) {
   return str->capacity < neededSize;
 }
 
+void copyStringAfterGrowing(StringHandle h, String *newString) {
+  if (!isValidIndex(h) || !newString) {
+    return;
+  }
+  String **roots = getRoots();
+  if (!roots)
+    return;
+
+  String *copyFrom = roots[h];
+
+  for (u32 i = 0; i < copyFrom->length; i++) {
+    newString->data[i] = copyFrom->data[i];
+    newString->length++;
+  }
+}
+
 void growString(StringHandle h, u64 minCapacity) {
   if (!isValidIndex(h)) {
     return;
@@ -39,9 +55,9 @@ void growString(StringHandle h, u64 minCapacity) {
     return;
 
   String *newstr = createString(getArena(), minCapacity * 2);
-  copyString(roots[h], newstr);
-  unmark(roots[h]);
 
+  copyStringAfterGrowing(h, newstr);
+  unmark(roots[h]);
   roots[h] = newstr;
   return;
 }
@@ -102,14 +118,24 @@ void copyString(StringHandle h1, StringHandle h2) {
   }
 }
 
-void copystr_char(const char *copyFrom, String *copyTo) {
-  if (!copyFrom || !copyTo) {
+void copystr_char(const char *copyFrom, StringHandle h) {
+  if (!copyFrom || !isValidIndex(h)) {
     return;
   }
+
+  String **roots = getRoots();
+  if (!roots) {
+    return;
+  }
+
+  String *copyTo = roots[h];
   copyTo->length = 0;
   int i = 0;
   for (i = 0; copyFrom[i] != '\0'; i++) {
-    copyTo = ensureCapacity(copyTo, i + 1);
+    if (shouldGrow(copyTo, i + 1)) {
+      growString(h, i + 1);
+      copyTo = roots[h];
+    }
     copyTo->data[i] = copyFrom[i];
     copyTo->length++;
   }

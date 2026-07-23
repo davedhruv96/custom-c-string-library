@@ -26,4 +26,8 @@ void arenaPopTemp(Arena *arena);
 
 void *getPtrToBuffer(Arena *arena);
 
+b8 arena_needs_mem(Arena *arena);
+
+void compact(u64 toBeCompacted, u64 At);
+
 #endif

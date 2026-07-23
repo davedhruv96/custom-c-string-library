@@ -83,14 +83,6 @@ u32 push(String *str) {
   return g_vm->rootsCount - 1;
 }
 
-// String *popTarget(VM *vm, String *str) {
-//   for (u64 i = 0; i < vm->rootsCount; i++) {
-//     if (vm->roots[i] == str) {
-//       removeTarget(vm, i);
-//     }
-//   }
-// }
-
 String *pop(VM *vm) {
   if (!vm) {
     return NULL;
@@ -134,4 +126,37 @@ void removeFromStack(StringHandle indexToRm) {
 
   unmark(g_vm->roots[indexToRm]);
   g_vm->roots[indexToRm] = NULL;
+}
+
+void markall() {
+  for (u32 i = 0; i < g_vm->rootsCount; i++) {
+    if (!g_vm->roots[i]) {
+      continue;
+    }
+    g_vm->roots[i]->marked = 1;
+  }
+}
+
+void gc() {
+  String **string = &g_vm->firstString;
+  String *unreached;
+  while (*string) {
+    if (!(*string)->marked) {
+      unreached = *string;
+      *string = (*string)->next;
+      compact(unreached->capacity, unreached->offsetInArena);
+    } else {
+      (*string)->marked = 0;
+      string = &(*string)->next;
+    }
+  }
+}
+
+void link_string(String *str) {
+  if (!str) {
+    return;
+  }
+
+  str->next = g_vm->firstString;
+  g_vm->firstString = str;
 }

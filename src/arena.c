@@ -87,3 +87,15 @@ void *getPtrToBuffer(Arena *arena) {
 void arenaClear(Arena *arena) { arena->bottom = 0; }
 
 void arenaDestroy(Arena *arena) { free(arena->buffer); }
+
+b8 arena_needs_mem(Arena *arena) {
+  if (!arena)
+    return 0;
+
+  if (arena->top - arena->bottom < arena->capacity / 10) {
+    return 1;
+  }
+  return 0;
+}
+
+void compact(u64 toBeCompacted, u64 At) {}

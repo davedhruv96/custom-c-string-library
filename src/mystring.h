@@ -26,7 +26,7 @@ void printStringToTerm(String *str);
 
 void copyString(StringHandle h1, StringHandle h2);
 
-void copystr_char(const char *copyFrom, String *copyTo);
+void copystr_char(const char *copyFrom, StringHandle h);
 
 void unmark(String *str);
 

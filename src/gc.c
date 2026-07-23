@@ -1,15 +1,20 @@
 #include "gc.h"
+#include "arena.h"
 #include "mystring.h"
+#include "vm.h"
 
-void mark(String *str) {
-  if (str->marked) {
-    return;
+b8 gc_should_run() {
+  Arena *arena = getArena();
+  if (!arena)
+    return 0;
+
+  if (arena_needs_mem(arena)) {
+    return 1;
   }
-  str->marked = 1;
+  return 0;
 }
 
-// void markAll(VM *vm) {
-//   for (u64 i = 0; i < vm->rootsCount; i++) {
-//     mark(vm->roots[i]);
-//   }
-// }
+void gc() {
+  markall();
+  compact();
+}

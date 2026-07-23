@@ -1,4 +1,5 @@
 #include "../include/stringlib.h"
+#include "gc.h"
 #include "mystring.h"
 #include "vm.h"
 #include <stdlib.h>
@@ -11,9 +12,14 @@ StringHandle sl_create_with_capacity(const char *s, u32 initial_size) {
 }
 
 StringHandle sl_create(const char *string) {
+  if (gc_should_run()) {
+    gc();
+  }
   String *str = createString(getArena(), 100);
   StringHandle h = push(str);
   copyTo(string, h);
+
+  link_string(str);
   return h;
 }
 
@@ -22,7 +28,7 @@ void copyTo(const char *copy_from, StringHandle copy_to) {
   if (!roots || !isValidIndex(copy_to)) {
     return;
   }
-  copystr_char(copy_from, roots[copy_to]);
+  copystr_char(copy_from, copy_to);
 }
 
 const char *sl_cstr(StringHandle h) {
