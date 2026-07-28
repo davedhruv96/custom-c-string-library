@@ -28,6 +28,8 @@ void *getPtrToBuffer(Arena *arena);
 
 b8 arena_needs_mem(Arena *arena);
 
-void compact(u64 toBeCompacted, u64 At);
+void setBottomToPos(Arena *arena, u64 position);
+
+String *compact(Arena *arena, String *str, u64 *position);
 
 #endif

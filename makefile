@@ -7,7 +7,7 @@ execute: main.c src/mystring.c src/arena.c src/gc.c src/vm.c src/stringlib.c
 debug:
 	gdb ./execute
 	
-memCheck: execute
+mem-check: execute
 	valgrind --leak-check=full -s --show-leak-kinds=all ./execute
 
 clean: execute

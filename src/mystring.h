@@ -6,7 +6,6 @@
 #include "vm.h"
 
 typedef struct String {
-  u64 size;
   b8 marked;
   u64 offsetInArena;
   struct String *next;
@@ -27,6 +26,8 @@ void printStringToTerm(String *str);
 void copyString(StringHandle h1, StringHandle h2);
 
 void copystr_char(const char *copyFrom, StringHandle h);
+
+void copystr_compact(String *copyFrom, String *copyTo);
 
 void unmark(String *str);
 

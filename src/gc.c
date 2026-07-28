@@ -13,8 +13,8 @@ b8 gc_should_run() {
   }
   return 0;
 }
-
-void gc() {
-  markall();
-  compact();
-}
+//
+// void gc() {
+//   markall();
+//   compact();
+// }

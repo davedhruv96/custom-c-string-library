@@ -12,11 +12,11 @@ struct Arena {
 Arena *arenaCreate(u64 size) {
   Arena *arena = (Arena *)malloc(sizeof(Arena));
   if (!arena) {
-    return NULL;
+    exit(-2);
   }
   arena->buffer = (u8 *)malloc(size);
   if (!arena->buffer) {
-    return NULL;
+    exit(-2);
   }
 
   arena->capacity = size;
@@ -32,7 +32,7 @@ u64 alignOffset(u64 currentOffset, u64 alignment) {
 void *arenaPush(Arena *arena, u64 size) {
   u64 currentOffset = alignOffset(arena->bottom, sizeof(void *));
   if (currentOffset + arena->bottom + size > arena->capacity) {
-    return NULL;
+    exit(-2);
   }
   void *ptr = arena->buffer + currentOffset;
 
@@ -98,4 +98,35 @@ b8 arena_needs_mem(Arena *arena) {
   return 0;
 }
 
-void compact(u64 toBeCompacted, u64 At) {}
+void setBottomToPos(Arena *arena, u64 position) {
+  if (arena) {
+    arena->bottom = position;
+  }
+}
+
+void *compactPush(Arena *arena, u64 *position, u64 size, u64 *offset) {
+  u64 currentOffset = alignOffset(*position, sizeof(void *));
+  if (currentOffset + size > arena->capacity) {
+    return NULL;
+  }
+  *offset = currentOffset;
+  void *ptr = arena->buffer + currentOffset;
+
+  *position = currentOffset + size;
+  return ptr;
+}
+
+String *compact(Arena *arena, String *str, u64 *position) {
+  if (!arena || !str) {
+    exit(-2);
+  }
+
+  u64 offset;
+  String *newstr = compactPush(arena, position, str->length, &offset);
+
+  newstr->offsetInArena = offset;
+  newstr->capacity = str->length;
+  copystr_compact(str, newstr);
+
+  return newstr;
+}

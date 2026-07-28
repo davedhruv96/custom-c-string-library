@@ -18,7 +18,7 @@ String *createString(Arena *arena, u64 initialSize) {
 
   str->capacity = initialSize;
   str->data[0] = '\0';
-  str->length = 0;
+  str->length = 1;
 
   return str;
 }
@@ -147,4 +147,16 @@ void unmark(String *str) {
     return;
   }
   str->marked = 0;
+}
+
+void copystr_compact(String *copyFrom, String *copyTo) {
+  if (!copyFrom || !copyTo) {
+    return;
+  }
+  u64 i;
+  for (i = 0; i < copyFrom->length; i++) {
+    copyTo->data[i] = copyFrom->data[i];
+    copyTo->length++;
+  }
+  copyTo->data[i] = '\0';
 }

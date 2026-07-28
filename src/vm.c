@@ -4,6 +4,7 @@
 #include "mystring.h"
 #include "stringlib.h"
 #include "types.h"
+#include <complex.h>
 #include <stdlib.h>
 #include <strings.h>
 
@@ -45,6 +46,8 @@ VM *createVM(u64 arenaSize) {
   }
 
   vm->arena = arena;
+
+  // note to self: not the best; find alternative
   vm->roots = getPtrToBuffer(arena) + sizeof(VM);
   // strings will allocate after VM is allocated on the arena,
   // so the starting point is Buffer + size(VM)
@@ -76,9 +79,14 @@ u32 push(String *str) {
     return -1;
   }
 
-  // if(vm->numObjects >= vm->maxObjects){
-  //
-  // }
+  if (g_vm->rootsCount >= g_vm->rootsCapacity) {
+    if (gc_should_run()) {
+      gc();
+    } else {
+      g_vm->rootsCapacity *= 2;
+    }
+  }
+
   g_vm->roots[g_vm->rootsCount++] = str;
   return g_vm->rootsCount - 1;
 }
@@ -138,16 +146,14 @@ void markall() {
 }
 
 void gc() {
-  String **string = &g_vm->firstString;
-  String *unreached;
-  while (*string) {
-    if (!(*string)->marked) {
-      unreached = *string;
-      *string = (*string)->next;
-      compact(unreached->capacity, unreached->offsetInArena);
-    } else {
-      (*string)->marked = 0;
-      string = &(*string)->next;
+  if (!g_vm) {
+    exit(-1);
+  }
+
+  u64 position = 0;
+  for (u64 i = g_vm->rootsCount; i != 0; i--) {
+    if (g_vm->roots[i - 1]) {
+      g_vm->roots[i - 1] = compact(g_vm->arena, g_vm->roots[i - 1], &position);
     }
   }
 }

@@ -7,6 +7,7 @@
 StringHandle sl_create_with_capacity(const char *s, u32 initial_size) {
   String *str = createString(getArena(), initial_size);
   StringHandle h = push(str);
+  link_string(str);
   copyTo(s, h);
   return h;
 }
@@ -29,6 +30,12 @@ void copyTo(const char *copy_from, StringHandle copy_to) {
     return;
   }
   copystr_char(copy_from, copy_to);
+}
+
+void sl_concat(StringHandle concatTo, StringHandle concat) {
+  if (!isValidIndex(concat) || !isValidIndex(concatTo)) {
+    return;
+  }
 }
 
 const char *sl_cstr(StringHandle h) {
