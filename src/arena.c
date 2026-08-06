@@ -29,24 +29,24 @@ u64 alignOffset(u64 currentOffset, u64 alignment) {
   return (currentOffset + (alignment - 1)) & ~(alignment - 1);
 }
 
-void *arenaPush(Arena *arena, u64 size) {
+void *arenaPushWithoutOffset(Arena *arena, u64 size) {
+  u64 temp = 1;
+  return arenaPush(arena, size, &temp);
+}
+
+void *arenaPush(Arena *arena, u64 size, u64 *offset) {
   u64 currentOffset = alignOffset(arena->bottom, sizeof(void *));
-  if (currentOffset + arena->bottom + size > arena->capacity) {
+  if (currentOffset + size > arena->capacity) {
     exit(-2);
   }
   void *ptr = arena->buffer + currentOffset;
-
+  if (*offset == 0) {
+    *offset = currentOffset;
+  }
   arena->bottom = currentOffset + size;
   return ptr;
 }
 
-void *arenaPushPersistent(Arena *arena, u64 size, u64 *offsetInArena) {
-  void *ptr = arenaPush(arena, size);
-  if (ptr) {
-    *offsetInArena = arena->bottom - size; // bottor or top object ..?
-  }
-  return ptr;
-}
 //
 // String *arenaAllocPersistent(Arena *arena, String *str) {
 //   if (!arena || !str) {
@@ -120,10 +120,8 @@ String *compact(Arena *arena, String *str, u64 *position) {
   if (!arena || !str) {
     exit(-2);
   }
-
   u64 offset;
-  String *newstr = compactPush(arena, position, str->length, &offset);
-
+  String *newstr = compactPush(arena, position, str->capacity, &offset);
   newstr->offsetInArena = offset;
   newstr->capacity = str->length;
   copystr_compact(str, newstr);

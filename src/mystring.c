@@ -8,10 +8,11 @@ String *createString(Arena *arena, u64 initialSize) {
   if (!arena) {
     return NULL;
   }
-  String *str = arenaPush(arena, sizeof(String));
-  str->data = arenaPush(arena, initialSize);
+  u64 offset = 0;
+  String *str = arenaPush(arena, sizeof(String), &offset);
+  str->data = arenaPushWithoutOffset(arena, initialSize);
   // actual character buffer
-
+  str->offsetInArena = offset;
   if (!str || !str->data) {
     return NULL;
   }
@@ -37,9 +38,7 @@ void copyStringAfterGrowing(StringHandle h, String *newString) {
   String **roots = getRoots();
   if (!roots)
     return;
-
   String *copyFrom = roots[h];
-
   for (u32 i = 0; i < copyFrom->length; i++) {
     newString->data[i] = copyFrom->data[i];
     newString->length++;
@@ -53,11 +52,8 @@ void growString(StringHandle h, u64 minCapacity) {
   String **roots = getRoots();
   if (!roots)
     return;
-
   String *newstr = createString(getArena(), minCapacity * 2);
-
   copyStringAfterGrowing(h, newstr);
-  unmark(roots[h]);
   roots[h] = newstr;
   return;
 }
@@ -67,10 +63,10 @@ int getString(StringHandle h) {
     return -1;
   }
   String **roots = getRoots();
-  String *string = roots[h];
-  string->length = 0;
   if (!roots)
     return -1;
+  String *string = roots[h];
+  string->length = 0;
   u64 len = 0;
   int ch = getchar();
   while (ch == '\n') {
@@ -80,6 +76,7 @@ int getString(StringHandle h) {
     if (shouldGrow(string,
                    len + 1)) { // note to self: neededSize should be changed
       growString(h, len + 1);
+      string = roots[h];
     }
     string->data[len] = (char)ch;
     ch = getchar();

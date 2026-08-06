@@ -12,6 +12,8 @@ StringHandle sl_create(const char *string);
 
 StringHandle sl_create_with_capacity(const char *string, u32 initial_size);
 
+void sl_destroy(StringHandle *to_destroy);
+
 void sl_shutdown(void);
 
 void copyTo(const char *copyFrom, StringHandle copyTo);

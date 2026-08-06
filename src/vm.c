@@ -39,8 +39,7 @@ VM *createVM(u64 arenaSize) {
   if (!arena) {
     exit(-1);
   }
-
-  VM *vm = (VM *)arenaPush(arena, (u64)sizeof(VM));
+  VM *vm = (VM *)arenaPushWithoutOffset(arena, (u64)sizeof(VM));
   if (!vm) {
     exit(-1);
   }
@@ -151,9 +150,9 @@ void gc() {
   }
 
   u64 position = 0;
-  for (u64 i = g_vm->rootsCount; i != 0; i--) {
-    if (g_vm->roots[i - 1]) {
-      g_vm->roots[i - 1] = compact(g_vm->arena, g_vm->roots[i - 1], &position);
+  for (u64 i = 0; i < g_vm->rootsCount; i++) {
+    if (g_vm->roots[i]) {
+      g_vm->roots[i] = compact(g_vm->arena, g_vm->roots[i], &position);
     }
   }
 }
