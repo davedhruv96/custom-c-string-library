@@ -4,7 +4,7 @@
 #include "vm.h"
 #include <stdlib.h>
 
-StringHandle sl_create_with_capacity(const char *s, u32 initial_size) {
+StringHandle sl_create_with_capacity(const char *s, u64 initial_size) {
   String *str = createString(getArena(), initial_size);
   StringHandle h = push(str);
   link_string(str);
@@ -40,17 +40,16 @@ void sl_concat(StringHandle concatTo, StringHandle concat) {
 
 const char *sl_cstr(StringHandle h) {
   String **roots = getRoots();
-  if (!roots || !isValidIndex(h)) {
+  if (!roots || !isValidIndex(h || !roots[h])) {
     return NULL;
   }
   return roots[h]->data;
 }
 
-void sl_destroy(StringHandle *to_destroy) {
-  if (!isValidIndex(*to_destroy)) {
+void sl_destroy(StringHandle to_destroy) {
+  if (!isValidIndex(to_destroy)) {
     return;
   }
 
-  removeFromStack(*to_destroy);
-  *to_destroy = -1;
+  removeFromStack(to_destroy);
 }

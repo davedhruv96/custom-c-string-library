@@ -155,6 +155,7 @@ void gc() {
       g_vm->roots[i] = compact(g_vm->arena, g_vm->roots[i], &position);
     }
   }
+  setBottomToPos(g_vm->arena, position);
 }
 
 void link_string(String *str) {

@@ -26,11 +26,15 @@ int main(void) {
     printf("%d = %s\n", i, sl_cstr(h[i]));
   }
   for (int i = 1; i < 25; i += 2) {
-    sl_destroy(&h[i]);
+    sl_destroy(h[i]);
   }
   for (int i = 0; i < 25; i++) {
-    printf("%d: %s\n", i, sl_cstr(h[i]));
+    char *str = sl_cstr(h[i]);
+    if (str) {
+      printf("%d: %s\n", i, str);
+    }
   }
+  gc();
   sl_shutdown();
   return 0;
 }
