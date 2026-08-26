@@ -11,5 +11,5 @@ mem-check: execute
 	valgrind --leak-check=full -s --show-leak-kinds=all ./execute
 
 clean: execute
-	rm -f execute
+	rm execute
 

@@ -149,10 +149,12 @@ void gc() {
     exit(-1);
   }
 
-  u64 position = 0;
+  u64 position = 32;
   for (u64 i = 0; i < g_vm->rootsCount; i++) {
-    if (g_vm->roots[i]) {
+    if (g_vm->roots[i] && position != g_vm->roots[i]->offsetInArena) {
       g_vm->roots[i] = compact(g_vm->arena, g_vm->roots[i], &position);
+    } else if (g_vm->roots[i] && position == g_vm->roots[i]->offsetInArena) {
+      position += g_vm->roots[i]->capacity + sizeof(String);
     }
   }
   setBottomToPos(g_vm->arena, position);

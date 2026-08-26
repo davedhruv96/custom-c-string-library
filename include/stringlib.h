@@ -20,4 +20,6 @@ void copyTo(const char *copyFrom, StringHandle copyTo);
 
 const char *sl_cstr(StringHandle h);
 
+void sl_print(StringHandle h);
+
 #endif

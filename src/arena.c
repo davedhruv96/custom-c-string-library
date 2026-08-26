@@ -1,6 +1,5 @@
 #include "arena.h"
 #include "mystring.h"
-#include <stdio.h>
 #include <stdlib.h>
 
 struct Arena {
@@ -123,9 +122,14 @@ String *compact(Arena *arena, String *str, u64 *position) {
   u64 offset;
   String *newstr =
       compactPush(arena, position, sizeof(String) + str->capacity, &offset);
+  if (!newstr) {
+    return NULL;
+  }
+
   newstr->data = (void *)newstr + sizeof(String);
   newstr->offsetInArena = offset;
   newstr->capacity = str->capacity;
+  newstr->length = 0;
   copystr_compact(str, newstr);
 
   return newstr;

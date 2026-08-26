@@ -2,6 +2,7 @@
 #include "gc.h"
 #include "mystring.h"
 #include "vm.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 StringHandle sl_create_with_capacity(const char *s, u64 initial_size) {
@@ -13,14 +14,10 @@ StringHandle sl_create_with_capacity(const char *s, u64 initial_size) {
 }
 
 StringHandle sl_create(const char *string) {
-  if (gc_should_run()) {
-    gc();
-  }
   String *str = createString(getArena(), 100);
   StringHandle h = push(str);
-  copyTo(string, h);
-
   link_string(str);
+  copyTo(string, h);
   return h;
 }
 
@@ -40,7 +37,7 @@ void sl_concat(StringHandle concatTo, StringHandle concat) {
 
 const char *sl_cstr(StringHandle h) {
   String **roots = getRoots();
-  if (!roots || !isValidIndex(h || !roots[h])) {
+  if (!roots || !isValidIndex(h) || !roots[h]) {
     return NULL;
   }
   return roots[h]->data;
@@ -52,4 +49,14 @@ void sl_destroy(StringHandle to_destroy) {
   }
 
   removeFromStack(to_destroy);
+}
+
+void sl_print(StringHandle h) {
+  String **roots = getRoots();
+  if (!roots || !isValidIndex(h)) {
+    return;
+  }
+
+  const char *str = sl_cstr(h);
+  printf("%s\n", str ? str : "(null)");
 }
