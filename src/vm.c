@@ -18,24 +18,33 @@ struct VM {
 };
 
 static VM *g_vm = NULL;
-static Arena *roots_arena = NULL;
 
 b8 sl_init(u64 memSize) {
   if (g_vm) {
     return 1;
   }
 
-  roots_arena = arenaCreate(sizeof(void *) * 24);
   g_vm = createVM(memSize);
   return 0;
 }
 
-void sl_shutdown(void) {
-  if (roots_arena) {
-    free(roots_arena);
+void destroyVM() {
+  if (g_vm->arena) {
+    Arena *arena = g_vm->arena;
+
+    free(g_vm->roots);
+
+    arenaClear(g_vm->arena);
+    arenaDestroy(g_vm->arena);
+    // frees the arena buffer, not arena
+
+    free(arena);
   }
+}
+
+void sl_shutdown(void) {
   if (g_vm) {
-    destroyVM(g_vm);
+    destroyVM();
     g_vm = NULL;
   }
 }
@@ -52,31 +61,13 @@ VM *createVM(u64 arenaSize) {
 
   vm->arena = arena;
 
-  // note to self: not the best; find alternative
-  vm->roots = getPtrToBuffer(roots_arena);
-  // strings will allocate after VM is allocated on the arena,
-  // so the starting point is Buffer + size(VM)
+  vm->roots = malloc(sizeof(void *) * 24);
 
   vm->firstString = NULL;
   vm->rootsCount = 0;
   vm->rootsCapacity = 24;
 
   return vm;
-}
-
-void destroyVM(VM *vm) {
-  if (!vm) {
-    return;
-  }
-
-  if (vm->arena) {
-    Arena *arena = vm->arena;
-    arenaClear(vm->arena);
-    arenaDestroy(vm->arena);
-    // frees the arena buffer, not arena
-
-    free(arena);
-  }
 }
 
 u32 push(String *str) {
@@ -89,25 +80,12 @@ u32 push(String *str) {
       gc();
     } else {
       g_vm->rootsCapacity *= 2;
+      g_vm->roots = realloc(g_vm->roots, sizeof(void *) * g_vm->rootsCapacity);
     }
   }
 
   g_vm->roots[g_vm->rootsCount++] = str;
   return g_vm->rootsCount - 1;
-}
-
-String *pop(VM *vm) {
-  if (!vm) {
-    return NULL;
-  }
-
-  if (vm->rootsCount <= 0) {
-    return NULL;
-  }
-  return vm->roots[--vm->rootsCount];
-  // the string will be there in arena,
-  // but next sweep or push will overwrite
-  // it, no need to bother
 }
 
 Arena *getArena() {

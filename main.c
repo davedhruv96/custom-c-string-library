@@ -12,6 +12,13 @@ int main(void) {
   sl_print(h2);
   sl_print(h3);
 
+  sl_destroy(h1);
+
+  gc();
+  sl_print(h1);
+  sl_print(h2);
+  sl_print(h3);
+
   sl_destroy(h3);
 
   gc();
@@ -20,13 +27,6 @@ int main(void) {
   sl_print(h3);
 
   sl_destroy(h2);
-
-  gc();
-  sl_print(h1);
-  sl_print(h2);
-  sl_print(h3);
-
-  sl_destroy(h1);
   sl_print(h1);
   sl_print(h2);
   sl_print(h3);

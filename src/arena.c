@@ -93,6 +93,8 @@ b8 arena_needs_mem(Arena *arena) {
     return 0;
 
   if (arena->top - arena->bottom < arena->capacity / 10) {
+    // this condition needs to change
+
     return 1;
   }
   return 0;

@@ -11,11 +11,7 @@ typedef u32 StringHandle;
 
 VM *createVM(u64 arenaSize);
 
-void destroyVM(VM *vm);
-
 u32 push(String *str);
-
-String *pop(VM *vm);
 
 Arena *getArena();
 
