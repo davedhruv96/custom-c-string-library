@@ -18,16 +18,22 @@ struct VM {
 };
 
 static VM *g_vm = NULL;
+static Arena *roots_arena = NULL;
 
 b8 sl_init(u64 memSize) {
   if (g_vm) {
-    return 0;
+    return 1;
   }
+
+  roots_arena = arenaCreate(sizeof(void *) * 24);
   g_vm = createVM(memSize);
-  return 1;
+  return 0;
 }
 
 void sl_shutdown(void) {
+  if (roots_arena) {
+    free(roots_arena);
+  }
   if (g_vm) {
     destroyVM(g_vm);
     g_vm = NULL;
@@ -47,7 +53,7 @@ VM *createVM(u64 arenaSize) {
   vm->arena = arena;
 
   // note to self: not the best; find alternative
-  vm->roots = getPtrToBuffer(arena) + sizeof(VM);
+  vm->roots = getPtrToBuffer(roots_arena);
   // strings will allocate after VM is allocated on the arena,
   // so the starting point is Buffer + size(VM)
 
@@ -149,9 +155,9 @@ void gc() {
     exit(-1);
   }
 
-  u64 position = 32;
+  u64 position = sizeof(VM);
   for (u64 i = 0; i < g_vm->rootsCount; i++) {
-    if (g_vm->roots[i] && position != g_vm->roots[i]->offsetInArena) {
+    if (g_vm->roots[i] != NULL && position != g_vm->roots[i]->offsetInArena) {
       g_vm->roots[i] = compact(g_vm->arena, g_vm->roots[i], &position);
     } else if (g_vm->roots[i] && position == g_vm->roots[i]->offsetInArena) {
       position += g_vm->roots[i]->capacity + sizeof(String);
