@@ -54,6 +54,7 @@ void sl_destroy(StringHandle to_destroy) {
 void sl_print(StringHandle h) {
   String **roots = getRoots();
   if (!roots || !isValidIndex(h)) {
+    printf("Invalid Handle\n");
     return;
   }
 

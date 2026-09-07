@@ -37,7 +37,7 @@ void *arenaPushWithoutOffset(Arena *arena, u64 size) {
 void *arenaPush(Arena *arena, u64 size, u64 *offset) {
   u64 currentOffset = alignOffset(arena->bottom, sizeof(void *));
   if (currentOffset + size > arena->capacity) {
-    exit(-2);
+    return NULL;
   }
   void *ptr = arena->buffer + currentOffset;
   if (*offset == 0) {

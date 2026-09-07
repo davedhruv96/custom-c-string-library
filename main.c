@@ -1,36 +1,39 @@
 #include "include/stringlib.h"
 #include "src/types.h"
 #include "src/vm.h"
+#include <stdio.h>
 
 int main(void) {
-  sl_init(MiB(4));
+  sl_init(KiB(2));
 
-  StringHandle h1 = sl_create_with_capacity("Hello World", 10);
-  StringHandle h2 = sl_create_with_capacity("Hiii", 10);
-  StringHandle h3 = sl_create_with_capacity("Heyooo", 10);
-  sl_print(h1);
-  sl_print(h2);
-  sl_print(h3);
+  StringHandle h[40];
+  for (int i = 0; i < 40; i++) {
+    h[i] = sl_create_with_capacity("Hello world", 12);
+  }
 
-  sl_destroy(h1);
+  for (int i = 0; i < 40; i++) {
+    printf("%d: ", i);
+    sl_print(h[i]);
+  }
 
+  for (int i = 1; i < 40; i += 2) {
+    sl_destroy(h[i]);
+  }
+
+  for (int i = 0; i < 40; i++) {
+    printf("%d: ", i);
+    sl_print(h[i]);
+  }
   gc();
-  sl_print(h1);
-  sl_print(h2);
-  sl_print(h3);
 
-  sl_destroy(h3);
+  for (int i = 1; i < 40; i += 2) {
+    h[i] = sl_create_with_capacity("Hello world", 12);
+  }
 
-  gc();
-  sl_print(h1);
-  sl_print(h2);
-  sl_print(h3);
-
-  sl_destroy(h2);
-  sl_print(h1);
-  sl_print(h2);
-  sl_print(h3);
-
+  for (int i = 0; i < 40; i++) {
+    printf("%d: ", i);
+    sl_print(h[i]);
+  }
   sl_shutdown();
   return 0;
 }

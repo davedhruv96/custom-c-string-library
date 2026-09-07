@@ -10,8 +10,14 @@ String *createString(Arena *arena, u64 initialSize) {
   }
   u64 offset = 0;
   String *str = arenaPush(arena, sizeof(String), &offset);
+  if (!str) {
+    return NULL;
+  }
   str->data = arenaPushWithoutOffset(arena, initialSize);
   // actual character buffer
+  if (!str->data) {
+    return NULL;
+  }
   str->offsetInArena = offset;
   if (!str || !str->data) {
     return NULL;
